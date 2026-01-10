@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abstract Submission - NC-SDESS 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="assets/img/hitam logo.png" type="image/png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header/Navigation */
+        header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .header-logo img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .header-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+        
+        .header-title-sub {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5568d3;
+        }
+        
+        /* Main Content */
+        .form-wrapper {
+            padding: 40px 20px;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .form-header h1 {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+        
+        .form-header p {
+            font-size: 14px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+        
+        .form-body {
+            padding: 30px;
+            min-height: 600px;
+        }
+        
+        .instructions {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-radius: 6px;
+        }
+        
+        .instructions h3 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        
+        .instructions ul {
+            list-style: none;
+            color: #555;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .instructions li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+        
+        /* Google Form Embedding */
+        .google-form-wrapper {
+            width: 100%;
+            margin-top: 24px;
+        }
+        
+        .google-form-wrapper iframe {
+            width: 100%;
+            height: 1200px;
+            border: none;
+            border-radius: 6px;
+        }
+        
+        /* Direct Link Option */
+        .form-link-section {
+            text-align: center;
+            padding: 30px;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .form-link-section h3 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        
+        .form-link-section p {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        
+        .direct-link-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .direct-link-btn:hover {
+            background: #218838;
+        }
+        
+        .loading-message {
+            text-align: center;
+            padding: 60px 30px;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .loading-message:after {
+            content: '.';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* Footer */
+        footer {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .form-header {
+                padding: 30px 20px;
+            }
+            
+            .form-header h1 {
+                font-size: 22px;
+            }
+            
+            .form-body {
+                padding: 20px;
+            }
+            
+            .google-form-wrapper iframe {
+                height: 1000px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a href="index.html" class="header-logo">
+                <img src="assets/img/hitam logo.png" alt="HITAM Logo">
+                <div>
+                    <div class="header-title">NC-SDESS 2026</div>
+                    <div class="header-title-sub">Abstract Submission</div>
+                </div>
+            </a>
+            <a href="index.html" class="back-btn">← Back to Conference</a>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <div class="form-wrapper">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>Submit Your Abstract</h1>
+                <p>For NC-SDESS 2026 - 1st National Conference on Solution Driven Engineering for Sustainable Society</p>
+                <p style="font-size: 12px; margin-top: 12px; opacity: 0.9;">Conference Date: January 28-29, 2026 • HITAM Campus</p>
+            </div>
+            
+            <div class="form-body">
+                <div class="instructions">
+                    <h3>📋 Submission Guidelines</h3>
+                    <ul>
+                        <li><strong>Word Limit:</strong> 250-300 words (approximately)</li>
+                        <li><strong>Required Fields:</strong> Name, Email, Phone, Institution, Track, Title, Abstract, Keywords</li>
+                        <li><strong>Format:</strong> Title, Authors, Keywords (3-5), and Brief Content</li>
+                        <li><strong>Language:</strong> English only</li>
+                        <li><strong>Content:</strong> Must clearly state problem statement, methodology, and expected outcomes</li>
+                        <li><strong>Submission Type:</strong> Choose between Paper Presentation or Poster Presentation</li>
+                        <li><strong>Important:</strong> You will receive your Abstract ID immediately after submission</li>
+                    </ul>
+                </div>
+                
+                <!-- Google Form Embedding -->
+                <div class="google-form-wrapper" id="formContainer">
+                    <div class="loading-message">Loading submission form</div>
+                </div>
+                
+                <!-- Direct Link Option -->
+                <div class="form-link-section">
+                    <h3>Having trouble with the form above?</h3>
+                    <p>If the form doesn't load properly, you can also submit your abstract using the direct link below.</p>
+                    <a href="https://docs.google.com/forms/d/e/REPLACE_WITH_YOUR_FORM_ID/viewform" target="_blank" class="direct-link-btn">
+                        📝 Open Form in New Window
+                    </a>
+                    <p style="margin-top: 12px; font-size: 12px;">Right-click and "Open in new tab" if needed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 NC-SDESS Conference. All rights reserved.</p>
+        <p style="margin-top: 8px;">For questions about abstract submission, contact: ncsdess2026@hitam.org</p>
+    </footer>
+    
+    <script>
+        // Replace this with your actual Google Form embedded iframe code
+        // Instructions:
+        // 1. Create your Google Form at https://forms.google.com
+        // 2. Go to Form Settings (gear icon)
+        // 3. Scroll to "Presentation"
+        // 4. Under "Confirmation message" or in the form itself, click "Send" 
+        // 5. Click on the embed icon
+        // 6. Copy the iframe code
+        // 7. Replace the iframe below with the copied code
+        
+        // Example of what the iframe code should look like:
+        /*
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLScfJlvdiSgFEjBqBqyqj2U2KsXLqMVElZw2z25L24GUpDviLg/viewform?embedded=true" 
+                width="700" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+        */
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the form container
+            const formContainer = document.getElementById('formContainer');
+            
+            // Your Google Form embedded iframe code (REPLACE WITH YOUR ACTUAL FORM)
+            const googleFormIframe = `
+                <iframe 
+                    src="https://docs.google.com/forms/d/e/REPLACE_WITH_YOUR_FORM_ID/viewform?embedded=true" 
+                    width="100%" 
+                    height="1200" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0"
+                    title="NC-SDESS 2026 Abstract Submission Form">
+                    Loading...
+                </iframe>
+            `;
+            
+            // Insert the iframe
+            formContainer.innerHTML = googleFormIframe;
+            
+            // Fallback for better browser compatibility
+            if (!window.location.hash) {
+                // Track if form was viewed
+                document.body.setAttribute('data-form-viewed', 'true');
+            }
+        });
+        
+        // Handle back button
+        document.querySelector('.header-logo').addEventListener('click', function(e) {
+            // Allow normal navigation
+            if (e.ctrlKey || e.metaKey || e.button === 1) {
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

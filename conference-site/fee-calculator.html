@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fee Calculator - NC-SDESS: 2026 | HITAM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <style>
+      .calculator-container {
+        max-width: 700px;
+        margin: 80px auto 40px;
+        background: white;
+        padding: 32px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #1a1f2a;
+      }
+      .form-group select,
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e1e8e3;
+        border-radius: 6px;
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+      }
+      .form-group select:focus,
+      .form-group input:focus {
+        outline: none;
+        border-color: #2e7d32;
+      }
+      .radio-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: normal;
+        cursor: pointer;
+      }
+      .radio-group input[type="radio"],
+      .checkbox-group input[type="checkbox"],
+      .checkbox-group input[type="radio"] {
+        width: auto;
+        cursor: pointer;
+      }
+      .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: normal;
+        cursor: pointer;
+      }
+      .result-box {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        padding: 24px;
+        border-radius: 8px;
+        margin-top: 24px;
+        display: none;
+      }
+      .result-box.show {
+        display: block;
+      }
+      .result-box h3 {
+        margin: 0 0 16px;
+        font-size: 20px;
+      }
+      .fee-breakdown {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+      }
+      .fee-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 15px;
+      }
+      .fee-line.total {
+        font-size: 24px;
+        font-weight: 800;
+        padding-top: 12px;
+        border-top: 2px solid rgba(255, 255, 255, 0.3);
+        margin-top: 12px;
+      }
+      .discount-applied {
+        color: #FFD700;
+        font-weight: 600;
+      }
+      .calculate-btn {
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 20px;
+      }
+      .calculate-btn:hover {
+        filter: brightness(1.1);
+      }
+      .edit-btn {
+        margin-top: 10px;
+        background: #e8f5e9;
+        color: #1a1f2a;
+        border: 1px solid #c8e6c9;
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        display: none;
+      }
+      .edit-btn:hover {
+        background: #dcedc8;
+      }
+      .payment-details {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 16px;
+        border-left: 4px solid #2e7d32;
+      }
+      .payment-details h4 {
+        margin: 0 0 12px;
+        color: #2e7d32;
+      }
+      .payment-details p {
+        margin: 6px 0;
+        font-size: 14px;
+        color: #1a1f2a;
+      }
+      .payment-details strong {
+        color: #1a1f2a;
+        font-weight: 700;
+      }
+      .note-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        padding: 16px;
+        border-radius: 6px;
+        margin-top: 20px;
+      }
+      .note-box p {
+        margin: 4px 0;
+        font-size: 14px;
+        color: #856404;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Fixed Navigation Bar -->
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <div class="brand">
+          <img src="assets/img/hitam logo.png" alt="HITAM Logo" class="brand-logo" />
+          <div class="brand-text">
+            <span class="brand-title">HITAM</span>
+            <span class="brand-sub">Student Chapters • Mechanical Engineering</span>
+          </div>
+        </div>
+        <nav id="site-nav" class="nav">
+          <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">☰</button>
+          <ul class="nav-list">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#registration">Registration</a></li>
+            <li><a href="index.html#fees">Fees</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="calculator-container">
+      <h1 style="margin-top: 0; color: #2e7d32;">Registration Fee Calculator</h1>
+      <p style="color: #55616a; margin-bottom: 24px;">Calculate your conference registration fee with applicable discounts</p>
+
+      <form id="feeCalculator">
+        <!-- Participant Type -->
+        <div class="form-group">
+          <label for="participantType">Participant Type *</label>
+          <select id="participantType" required onchange="updateParticipantTypeFields()">
+            <option value="">-- Select Participant Type --</option>
+            <option value="student">Student (UG/PG/PhD)</option>
+            <option value="faculty">Faculty</option>
+            <option value="professional">Professional</option>
+            <option value="listener">Accompanying Person / Listener</option>
+          </select>
+        </div>
+
+        <!-- Organization -->
+        <div class="form-group">
+          <label for="organization">Organization *</label>
+          <select id="organization" required onchange="updateSubmissionTypeOptions()">
+            <option value="">-- Select Organization --</option>
+            <option value="hitam">HITAM</option>
+            <option value="academic">Other Academic / Research</option>
+            <option value="industry">Industry</option>
+            <option value="any">Any</option>
+          </select>
+        </div>
+
+        <!-- Submission Type -->
+        <div class="form-group">
+          <label for="submissionType">Submission Type *</label>
+          <select id="submissionType" required onchange="updateSubmissionTypeFields()">
+            <option value="">-- Select Submission Type --</option>
+            <option value="offline">Offline Paper</option>
+            <option value="online" id="onlineOption">Online Paper</option>
+            <option value="poster">Poster</option>
+            <option value="listener">Listener / Attendee</option>
+          </select>
+        </div>
+
+        <!-- Paper Type (Full/Half) -->
+        <div class="form-group">
+          <label for="paperType">Paper Type (if applicable) *</label>
+          <select id="paperType" required>
+            <option value="">-- Select Paper Type --</option>
+            <option value="full">Full Paper (8-10 pages)</option>
+            <option value="na">Not Applicable (Listener/Attendee only)</option>
+          </select>
+        </div>
+
+        <!-- Registration Date -->
+        <div class="form-group">
+          <label for="registrationDate">Registration Date *</label>
+          <input type="date" id="registrationDate" required />
+        </div>
+
+        <!-- Technical Chapter Membership -->
+        <div class="form-group">
+          <label>Do you have membership in any of these technical chapters? (Select only one) *</label>
+          <div class="checkbox-group">
+            <label>
+              <input type="radio" name="membership" value="isampe" />
+              ISAMPE (Indian Society for Advancement of Materials and Process Engineering)
+            </label>
+            <label>
+              <input type="radio" name="membership" value="ieom" />
+              IEOM (Industrial Engineering and Operations Management)
+            </label>
+            <label>
+              <input type="radio" name="membership" value="ieee" />
+              IEEE (Institute of Electrical and Electronics Engineers)
+            </label>
+            <label>
+              <input type="radio" name="membership" value="isnt" />
+              ISNT (Indian Society for Non-Destructive Testing)
+            </label>
+            <label style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e1e8e3;">
+              <input type="radio" name="membership" value="none" checked />
+              <strong>No Membership</strong> (I don't have membership in any of the above chapters)
+            </label>
+          </div>
+        </div>
+
+        <button type="button" class="calculate-btn" onclick="calculateFee()">Calculate Fee</button>
+      </form>
+
+      <!-- Result Box -->
+      <div id="resultBox" class="result-box">
+        <h3>Your Registration Fee</h3>
+        <div class="fee-breakdown">
+          <div class="fee-line">
+            <span>Base Fee:</span>
+            <span id="baseFee">₹0</span>
+          </div>
+          <div class="fee-line" id="earlyBirdLine" style="display: none;">
+            <span class="discount-applied">Early Bird Discount (10%):</span>
+            <span id="earlyBirdDiscount" class="discount-applied">- ₹0</span>
+          </div>
+          <div class="fee-line" id="membershipLine" style="display: none;">
+            <span class="discount-applied">Membership Discount (10%):</span>
+            <span id="membershipDiscount" class="discount-applied">- ₹0</span>
+          </div>
+          <div class="fee-line total">
+            <span>Final Amount:</span>
+            <span id="finalFee">₹0</span>
+          </div>
+        </div>
+
+        <div class="payment-details">
+          <h4>Payment Details</h4>
+          <p><strong>Account Number:</strong> 0547053000005960</p>
+          <p><strong>Account Name:</strong> IEEE Account, Hyderabad Institute of Technology and Management</p>
+          <p><strong>Bank Name:</strong> South Indian Bank</p>
+          <p><strong>IFSC Code:</strong> SIBL0000547</p>
+          <p><strong>Branch:</strong> Quthbullapur</p>
+        </div>
+
+        <div class="note-box">
+          <p><strong>Important:</strong> After making the payment, please fill the registration form with your payment details and attach the payment receipt/screenshot.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Hide Paper Type section when Participant Type is Listener
+      function updateParticipantTypeFields() {
+        const participantType = document.getElementById('participantType').value;
+        const paperTypeEl = document.getElementById('paperType');
+        const paperTypeGroup = paperTypeEl ? paperTypeEl.closest('.form-group') : null;
+        if (!paperTypeGroup) return;
+
+        if (participantType === 'listener') {
+          // Hide and disable Paper Type for listeners
+          paperTypeGroup.style.display = 'none';
+          paperTypeEl.value = 'na';
+          paperTypeEl.disabled = true;
+          paperTypeEl.removeAttribute('required');
+        } else {
+          // Show and enable for other participant types
+          paperTypeGroup.style.display = 'block';
+          paperTypeEl.disabled = false;
+          paperTypeEl.setAttribute('required', 'required');
+          if (paperTypeEl.value === 'na') paperTypeEl.value = '';
+        }
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', () => {
+        updateParticipantTypeFields();
+      });
+      // Set today's date as default
+      document.getElementById('registrationDate').valueAsDate = new Date();
+
+      // Function to disable/enable online option based on organization
+      function updateSubmissionTypeOptions() {
+        const organization = document.getElementById('organization').value;
+        const submissionType = document.getElementById('submissionType');
+        const onlineOption = document.getElementById('onlineOption');
+        
+        if (organization === 'hitam') {
+          // Remove online option for HITAM
+          if (onlineOption) {
+            onlineOption.remove();
+          }
+          
+          // If online was selected, reset the selection
+          if (submissionType.value === 'online') {
+            submissionType.value = '';
+          }
+        } else {
+          // Add online option back if it doesn't exist
+          if (!document.getElementById('onlineOption')) {
+            const newOnlineOption = document.createElement('option');
+            newOnlineOption.value = 'online';
+            newOnlineOption.id = 'onlineOption';
+            newOnlineOption.textContent = 'Online Paper';
+            
+            // Insert between Offline Paper and Poster
+            const offlineOption = submissionType.querySelector('option[value="offline"]');
+            if (offlineOption && offlineOption.nextSibling) {
+              submissionType.insertBefore(newOnlineOption, offlineOption.nextSibling);
+            }
+          }
+        }
+      }
+
+      // Controls to lock after calculation
+      const inputsToLock = [
+        document.getElementById('participantType'),
+        document.getElementById('organization'),
+        document.getElementById('submissionType'),
+        document.getElementById('paperType'),
+        document.getElementById('registrationDate'),
+        ...document.querySelectorAll('input[name="membership"]')
+      ];
+
+      function setInputsDisabled(state) {
+        inputsToLock.forEach(el => {
+          if (el) el.disabled = state;
+        });
+      }
+
+      // Fee structure based on the provided table
+      const feeStructure = {
+        student: {
+          hitam: { offline: 600, online: 500, poster: 500 },
+          academic: { offline: 800, online: 700, poster: 600 }
+        },
+        faculty: {
+          hitam: { offline: 1000, online: 900, poster: 700 },
+          academic: { offline: 1400, online: 1100, poster: 1000 }
+        },
+        professional: {
+          industry: { offline: 1700, online: 1400, poster: 1200 }
+        },
+        listener: {
+            any: { offline: 300, online: 250, poster: 250, listener: 300 }
+        }
+      };
+
+      function calculateFee() {
+        // Get form values
+        const participantType = document.getElementById('participantType').value;
+        const organization = document.getElementById('organization').value;
+        const submissionType = document.getElementById('submissionType').value;
+        const registrationDateInput = document.getElementById('registrationDate').value;
+        
+        // Check if required basic fields are filled
+        if (!participantType || !organization || !submissionType || !registrationDateInput) {
+          alert('Please fill all required fields');
+          return;
+        }
+
+        // Check if at least one membership option is selected
+        const selectedMembership = document.querySelector('input[name="membership"]:checked');
+        if (!selectedMembership) {
+          alert('Please select a membership option');
+          return;
+        }
+
+        // Parse registration date
+        const registrationDate = new Date(registrationDateInput);
+        if (isNaN(registrationDate.getTime())) {
+          alert('Invalid registration date');
+          return;
+        }
+
+        // For non-listeners, check paper type
+        if (participantType !== 'listener') {
+          const paperType = document.getElementById('paperType').value;
+          if (!paperType || paperType === '') {
+            alert('Please select Paper Type');
+            return;
+          }
+          if (paperType === 'na') {
+            alert('Please select Full Paper or applicable Paper Type for your submission');
+            return;
+          }
+        }
+
+        // Check membership value
+        const hasMembership = selectedMembership && selectedMembership.value !== 'none';
+
+        // Get base fee
+        let baseFee = 0;
+        
+        try {
+          if (participantType === 'student') {
+            const org = organization === 'hitam' ? 'hitam' : 'academic';
+            baseFee = feeStructure.student[org][submissionType];
+          } else if (participantType === 'faculty') {
+            const org = organization === 'hitam' ? 'hitam' : 'academic';
+            baseFee = feeStructure.faculty[org][submissionType];
+          } else if (participantType === 'professional') {
+            baseFee = feeStructure.professional.industry[submissionType];
+          } else if (participantType === 'listener') {
+            baseFee = feeStructure.listener.any[submissionType];
+          }
+        } catch (error) {
+          console.error('Fee calculation error:', error);
+          alert('Invalid combination of participant type, organization, and submission type');
+          return;
+        }
+
+        if (!baseFee) {
+          alert('Invalid fee configuration. Please check your selections.');
+          return;
+        }
+
+        // Check early bird discount (on or before Jan 15, 2026)
+        const earlyBirdDeadline = new Date('2026-01-15');
+        const isEarlyBird = registrationDate <= earlyBirdDeadline;
+
+        // Calculate discounts
+        let discount = 0;
+        let earlyBirdAmount = 0;
+        let membershipAmount = 0;
+
+        if (isEarlyBird) {
+          earlyBirdAmount = Math.round(baseFee * 0.10);
+          discount += earlyBirdAmount;
+        }
+
+        if (hasMembership) {
+          membershipAmount = Math.round(baseFee * 0.10);
+          discount += membershipAmount;
+        }
+
+        const finalFee = baseFee - discount;
+
+        // Display results
+        document.getElementById('baseFee').textContent = '₹' + baseFee;
+        document.getElementById('finalFee').textContent = '₹' + finalFee;
+
+        // Show/hide discount lines
+        const earlyBirdLine = document.getElementById('earlyBirdLine');
+        const membershipLine = document.getElementById('membershipLine');
+
+        if (isEarlyBird) {
+          earlyBirdLine.style.display = 'flex';
+          document.getElementById('earlyBirdDiscount').textContent = '- ₹' + earlyBirdAmount;
+        } else {
+          earlyBirdLine.style.display = 'none';
+        }
+
+        if (hasMembership) {
+          membershipLine.style.display = 'flex';
+          document.getElementById('membershipDiscount').textContent = '- ₹' + membershipAmount;
+        } else {
+          membershipLine.style.display = 'none';
+        }
+
+        // Show result box
+        document.getElementById('resultBox').classList.add('show');
+        
+        // Scroll to result
+        document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        // Lock inputs permanently
+        setInputsDisabled(true);
+      }
+
+      // Mobile menu toggle
+      document.getElementById('menu-toggle').addEventListener('click', function() {
+        document.querySelector('.nav-list').classList.toggle('show');
+      });
+    </script>
+  </body>
+</html>

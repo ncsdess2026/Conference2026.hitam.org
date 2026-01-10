@@ -1,0 +1,8 @@
+# Deny access to configuration files
+<Files ~ "\.(php|json)$">
+    Require all denied
+</Files>
+
+# Or if using older Apache:
+# Order deny,allow
+# Deny from all

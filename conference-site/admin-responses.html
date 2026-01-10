@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Responses - Admin Panel</title>
+    <link rel="icon" href="assets/img/hitam logo.png" type="image/png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-left img {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .header-left h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 3px;
+        }
+        
+        .header-left p {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .logout-btn, .refresh-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .number {
+            color: #667eea;
+            font-size: 32px;
+            font-weight: bold;
+        }
+        
+        .responses-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .responses-container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-section input,
+        .filter-section select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .filter-section input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+        
+        table thead {
+            background: #f5f5f5;
+        }
+        
+        table th {
+            padding: 15px 12px;
+            text-align: left;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            font-size: 14px;
+        }
+        
+        table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-accepted {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 3px;
+        }
+        
+        .btn-accept {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-accept:hover {
+            background: #218838;
+        }
+        
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #c82333;
+        }
+        
+        .btn-view {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #5568d3;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #667eea;
+            font-size: 16px;
+        }
+        
+        .loading:after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .close-btn {
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        
+        .close-btn:hover {
+            color: #333;
+        }
+        
+        .detail-row {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-row label {
+            display: block;
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .detail-row .value {
+            color: #333;
+            font-size: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <img src="assets/img/hitam logo.png" alt="HITAM Logo">
+                <div>
+                    <h1>Registration Responses</h1>
+                    <p>NC-SDESS 2026 Conference Admin Panel</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="refresh-btn" onclick="loadResponses()">🔄 Refresh</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+        
+        <div id="alertContainer"></div>
+        
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>Total Responses</h3>
+                <div class="number" id="totalResponses">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="number" id="pendingCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Accepted</h3>
+                <div class="number" id="acceptedCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Rejected</h3>
+                <div class="number" id="rejectedCount">0</div>
+            </div>
+        </div>
+        
+        <div class="responses-container">
+            <h2>📋 All Registrations</h2>
+            
+            <div class="filter-section">
+                <input type="text" id="searchInput" placeholder="🔍 Search by name, email, institution...">
+                <select id="statusFilter">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            
+            <div class="table-wrapper">
+                <div id="loadingMessage" class="loading">Loading registration data</div>
+                <div id="noDataMessage" class="no-data" style="display: none;">No registration responses found</div>
+                
+                <table id="responsesTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Timestamp</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Institution</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="responsesTableBody">
+                        <!-- Responses will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Details Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registration Details</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="detailsContent">
+                <!-- Details will be loaded here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Check authentication
+        if (sessionStorage.getItem('adminLoggedIn') !== 'true') {
+            window.location.href = 'admin-login.html';
+        }
+        
+        // Sample data structure (this will be replaced with actual Google Form data)
+        let allResponses = [];
+        let filteredResponses = [];
+        
+        // Load responses on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResponses();
+            
+            // Set up search and filter
+            document.getElementById('searchInput').addEventListener('input', filterResponses);
+            document.getElementById('statusFilter').addEventListener('change', filterResponses);
+        });
+        
+        async function loadResponses() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const noDataMessage = document.getElementById('noDataMessage');
+            const responsesTable = document.getElementById('responsesTable');
+            
+            loadingMessage.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            responsesTable.style.display = 'none';
+            
+            try {
+                // Fetch data from the Google Form via PHP backend
+                const response = await fetch('api-get-registration-responses.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    allResponses = data.responses || [];
+                    filteredResponses = [...allResponses];
+                    
+                    updateStats();
+                    displayResponses();
+                    
+                    loadingMessage.style.display = 'none';
+                    
+                    if (allResponses.length === 0) {
+                        noDataMessage.style.display = 'block';
+                    } else {
+                        responsesTable.style.display = 'table';
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to load responses');
+                }
+            } catch (error) {
+                console.error('Error loading responses:', error);
+                loadingMessage.innerHTML = '❌ Error loading data: ' + error.message + '<br><small>Make sure the PHP backend is configured properly.</small>';
+                
+                // For demonstration purposes, load sample data
+                loadSampleData();
+            }
+        }
+        
+        function loadSampleData() {
+            // Sample data for demonstration
+            allResponses = [
+                {
+                    id: 1,
+                    timestamp: '2026-01-09 10:30:00',
+                    name: 'Dr. Rajesh Kumar',
+                    email: 'rajesh.kumar@example.com',
+                    phone: '+91-9876543210',
+                    institution: 'IIT Delhi',
+                    category: 'Faculty',
+                    participationType: 'Paper Presentation',
+                    status: 'pending'
+                },
+                {
+                    id: 2,
+                    timestamp: '2026-01-09 11:45:00',
+                    name: 'Priya Sharma',
+                    email: 'priya.sharma@example.com',
+                    phone: '+91-8765432109',
+                    institution: 'NIT Warangal',
+                    category: 'Student',
+                    participationType: 'Poster Presentation',
+                    status: 'accepted'
+                },
+                {
+                    id: 3,
+                    timestamp: '2026-01-09 14:20:00',
+                    name: 'Prof. Suresh Reddy',
+                    email: 'suresh.reddy@example.com',
+                    phone: '+91-7654321098',
+                    institution: 'JNTU Hyderabad',
+                    category: 'Faculty',
+                    participationType: 'Attendee Only',
+                    status: 'pending'
+                }
+            ];
+            
+            filteredResponses = [...allResponses];
+            updateStats();
+            displayResponses();
+            
+            document.getElementById('loadingMessage').style.display = 'none';
+            document.getElementById('responsesTable').style.display = 'table';
+            
+            showAlert('Using sample data for demonstration. Configure PHP backend to load actual Google Form responses.', 'error');
+        }
+        
+        function updateStats() {
+            document.getElementById('totalResponses').textContent = allResponses.length;
+            document.getElementById('pendingCount').textContent = allResponses.filter(r => r.status === 'pending').length;
+            document.getElementById('acceptedCount').textContent = allResponses.filter(r => r.status === 'accepted').length;
+            document.getElementById('rejectedCount').textContent = allResponses.filter(r => r.status === 'rejected').length;
+        }
+        
+        function displayResponses() {
+            const tbody = document.getElementById('responsesTableBody');
+            tbody.innerHTML = '';
+            
+            filteredResponses.forEach((response, index) => {
+                const row = document.createElement('tr');
+                
+                const statusClass = `status-${response.status}`;
+                const statusText = response.status.charAt(0).toUpperCase() + response.status.slice(1);
+                
+                let actionButtons = '';
+                if (response.status === 'pending') {
+                    actionButtons = `
+                        <button class="action-btn btn-accept" onclick="acceptResponse(${response.id})">✓ Accept</button>
+                        <button class="action-btn btn-reject" onclick="rejectResponse(${response.id})">✗ Reject</button>
+                    `;
+                } else {
+                    actionButtons = `<button class="action-btn btn-view" onclick="viewDetails(${response.id})">👁 View</button>`;
+                }
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${formatTimestamp(response.timestamp)}</td>
+                    <td>${response.name}</td>
+                    <td>${response.email}</td>
+                    <td>${response.phone}</td>
+                    <td>${response.institution}</td>
+                    <td>${response.category}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${actionButtons}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        function filterResponses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            filteredResponses = allResponses.filter(response => {
+                const matchesSearch = 
+                    response.name.toLowerCase().includes(searchTerm) ||
+                    response.email.toLowerCase().includes(searchTerm) ||
+                    response.institution.toLowerCase().includes(searchTerm) ||
+                    response.phone.includes(searchTerm);
+                
+                const matchesStatus = statusFilter === 'all' || response.status === statusFilter;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            displayResponses();
+        }
+        
+        async function acceptResponse(id) {
+            if (!confirm('Are you sure you want to accept this registration?')) {
+                return;
+            }
+            
+            try {
+                // Send accept request to backend
+                const response = await fetch('api-accept-registration.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id, action: 'accept' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update local data
+                    const registration = allResponses.find(r => r.id === id);
+                    if (registration) {
+                        registration.status = 'accepted';
+                    }
+                    
+                    updateStats();
+                    displayResponses();
+                    showAlert('Registration accepted successfully!', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to accept registration');
+                }
+            } catch (error) {
+                console.error('Error accepting registration:', error);
+                
+                // For demo purposes, update locally
+                const registration = allResponses.find(r => r.id === id);
+                if (registration) {
+                    registration.status = 'accepted';
+                    updateStats();
+                    displayResponses();
+                    showAlert('Registration accepted (demo mode)', 'success');
+                }
+            }
+        }
+        
+        async function rejectResponse(id) {
+            if (!confirm('Are you sure you want to reject this registration?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('api-accept-registration.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id, action: 'reject' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const registration = allResponses.find(r => r.id === id);
+                    if (registration) {
+                        registration.status = 'rejected';
+                    }
+                    
+                    updateStats();
+                    displayResponses();
+                    showAlert('Registration rejected.', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to reject registration');
+                }
+            } catch (error) {
+                console.error('Error rejecting registration:', error);
+                
+                // For demo purposes, update locally
+                const registration = allResponses.find(r => r.id === id);
+                if (registration) {
+                    registration.status = 'rejected';
+                    updateStats();
+                    displayResponses();
+                    showAlert('Registration rejected (demo mode)', 'success');
+                }
+            }
+        }
+        
+        function viewDetails(id) {
+            const response = allResponses.find(r => r.id === id);
+            if (!response) return;
+            
+            const detailsContent = document.getElementById('detailsContent');
+            detailsContent.innerHTML = `
+                <div class="detail-row">
+                    <label>Registration ID</label>
+                    <div class="value">#${response.id}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Timestamp</label>
+                    <div class="value">${formatTimestamp(response.timestamp)}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Full Name</label>
+                    <div class="value">${response.name}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Email Address</label>
+                    <div class="value">${response.email}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Phone Number</label>
+                    <div class="value">${response.phone}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Institution</label>
+                    <div class="value">${response.institution}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Category</label>
+                    <div class="value">${response.category}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Participation Type</label>
+                    <div class="value">${response.participationType}</div>
+                </div>
+                <div class="detail-row">
+                    <label>Status</label>
+                    <div class="value"><span class="status-badge status-${response.status}">${response.status.charAt(0).toUpperCase() + response.status.slice(1)}</span></div>
+                </div>
+            `;
+            
+            document.getElementById('detailsModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+        
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            const alert = document.createElement('div');
+            alert.className = `alert ${alertClass}`;
+            alert.textContent = message;
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                sessionStorage.removeItem('adminLoggedIn');
+                window.location.href = 'admin-login.html';
+            }
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('detailsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Registration Confirmation - NC-SDESS 2026</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+        h1 {
+            color: #2e7d32;
+            margin-top: 0;
+            text-align: center;
+        }
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section h2 {
+            color: #2e7d32;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+        }
+        .required {
+            color: #d32f2f;
+        }
+        .btn {
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-secondary {
+            background: #666;
+        }
+        .btn-secondary:hover {
+            box-shadow: 0 5px 15px rgba(102, 102, 102, 0.3);
+        }
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .results-table th {
+            background: #2e7d32;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        .results-table tr:hover {
+            background: #f9f9f9;
+        }
+        .status-sent {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .status-failed {
+            color: #f44336;
+            font-weight: bold;
+        }
+        .summary-box {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .summary-item {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .summary-total { background: #e0e0e0; color: #333; }
+        .summary-sent { background: #d4edda; color: #155724; }
+        .summary-failed { background: #f8d7da; color: #721c24; }
+        .template-preview {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Bulk Registration Confirmation</h1>
+        
+        <div class="info-box">
+            <strong>Instructions:</strong> Upload a CSV file with verified student data to send confirmation emails to all students at once.
+            <br><strong>Step 1:</strong> Download the CSV template. <strong>Step 2:</strong> Fill in student data from Google Form. 
+            <strong>Step 3:</strong> Upload and send!
+        </div>
+
+        <div class="section">
+            <h2>Step 1: Download CSV Template</h2>
+            <p>Click the button below to download the template CSV file:</p>
+            <button class="btn btn-secondary" onclick="downloadTemplate()">📥 Download CSV Template</button>
+            
+            <div class="template-preview">
+                <strong>CSV Format (copy this structure):</strong><br>
+name,email,phone,organization,category,participationType,attendanceMode,abstractId,paperId,posterId,transactionId,amountPaid,verifiedBy<br>
+John Doe,john@example.com,+91 9999999999,HITAM,Student,Paper,Offline,ABS-2026-ABC123,PAPER-2026-DEF456,,TXN001,800,Admin<br>
+Jane Smith,jane@example.com,+91 8888888888,MIT,Scholar,Poster,Online,ABS-2026-GHI789,,POST-2026-JKL012,600,Admin
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: Upload CSV File</h2>
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="csvFile">Select CSV File <span class="required">*</span></label>
+                    <input type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                    <small style="color: #666;">Only CSV files are accepted. Make sure all required columns are present.</small>
+                </div>
+
+                <button type="submit" class="btn" id="uploadBtn">📤 Upload & Send Confirmations</button>
+            </form>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div id="resultsSection" class="section" style="display: none;">
+            <h2>Results</h2>
+            <div class="summary-box">
+                <div class="summary-item summary-total">
+                    Total Processed<br>
+                    <span id="totalCount">0</span>
+                </div>
+                <div class="summary-item summary-sent">
+                    Successfully Sent<br>
+                    <span id="sentCount">0</span>
+                </div>
+                <div class="summary-item summary-failed">
+                    Failed<br>
+                    <span id="failedCount">0</span>
+                </div>
+            </div>
+
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Download template CSV
+        function downloadTemplate() {
+            const csv = `name,email,phone,organization,category,participationType,attendanceMode,abstractId,paperId,posterId,transactionId,amountPaid,verifiedBy
+John Doe,john@example.com,+91 9999999999,HITAM,Student,Paper,Offline,ABS-2026-ABC123,PAPER-2026-DEF456,,TXN001,800,Admin
+Jane Smith,jane@example.com,+91 8888888888,MIT Scholar,Poster,Online,ABS-2026-GHI789,,POST-2026-JKL012,TXN002,600,Admin`;
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'registration_confirmation_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        // Handle form submission
+        const form = document.getElementById('uploadForm');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const messageDiv = document.getElementById('message');
+        const resultsSection = document.getElementById('resultsSection');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const csvFile = document.getElementById('csvFile').files[0];
+            if (!csvFile) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '✗ Please select a CSV file';
+                messageDiv.style.display = 'block';
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Processing...';
+            messageDiv.style.display = 'none';
+            resultsSection.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('csvFile', csvFile);
+
+            try {
+                const response = await fetch('process-bulk-confirmation.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.innerHTML = `<strong>✓ Success!</strong><br>${result.message}`;
+                    
+                    // Display results
+                    displayResults(result.results);
+                    resultsSection.style.display = 'block';
+                    form.reset();
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.innerHTML = `<strong>✗ Error:</strong> ${result.message}`;
+                }
+            } catch (error) {
+                messageDiv.className = 'message error';
+                messageDiv.innerHTML = `<strong>✗ Error:</strong> ${error.message}`;
+            }
+
+            messageDiv.style.display = 'block';
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = '📤 Upload & Send Confirmations';
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+
+        // Display results in table
+        function displayResults(results) {
+            document.getElementById('totalCount').textContent = results.total;
+            document.getElementById('sentCount').textContent = results.sent;
+            document.getElementById('failedCount').textContent = results.failed;
+
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+
+            results.details.forEach(detail => {
+                const row = document.createElement('tr');
+                const statusClass = detail.status === 'sent' ? 'status-sent' : 'status-failed';
+                const detailText = detail.registration_number || detail.reason || 'Unknown error';
+                
+                row.innerHTML = `
+                    <td>${detail.name}</td>
+                    <td>${detail.email}</td>
+                    <td class="${statusClass}">${detail.status.toUpperCase()}</td>
+                    <td>${detailText}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>

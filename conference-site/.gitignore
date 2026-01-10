@@ -1,0 +1,24 @@
+# Sensitive configuration files
+config/gsheets-service.json
+config/email-config.php
+
+# Dependencies
+vendor/
+composer.lock
+
+# Logs
+logs/
+*.log
+
+# Submissions backup
+submissions/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
