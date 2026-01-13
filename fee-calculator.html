@@ -198,6 +198,11 @@
     <div class="calculator-container">
       <h1 style="margin-top: 0; color: #2e7d32;">Registration Fee Calculator</h1>
       <p style="color: #55616a; margin-bottom: 24px;">Calculate your conference registration fee with applicable discounts</p>
+      <div class="note-box" style="background-color: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin-bottom: 20px;">
+        <p style="margin: 0; color: #1b5e20; font-weight: 600;">
+          <strong>Free Entry for HITAM Students & Faculty:</strong> HITAM students and faculty who are only attending the conference (not presenting papers/posters) can attend for <strong>FREE (₹0)</strong>.
+        </p>
+      </div>
 
       <form id="feeCalculator">
         <!-- Participant Type -->
@@ -340,11 +345,12 @@
       // Hide Paper Type section when Participant Type is Listener
       function updateParticipantTypeFields() {
         const participantType = document.getElementById('participantType').value;
+        const submissionType = document.getElementById('submissionType').value;
         const paperTypeEl = document.getElementById('paperType');
         const paperTypeGroup = paperTypeEl ? paperTypeEl.closest('.form-group') : null;
         if (!paperTypeGroup) return;
 
-        if (participantType === 'listener') {
+        if (participantType === 'listener' || submissionType === 'listener') {
           // Hide and disable Paper Type for listeners
           paperTypeGroup.style.display = 'none';
           paperTypeEl.value = 'na';
@@ -357,6 +363,11 @@
           paperTypeEl.setAttribute('required', 'required');
           if (paperTypeEl.value === 'na') paperTypeEl.value = '';
         }
+      }
+
+      // Hide Paper Type section when Submission Type is Listener
+      function updateSubmissionTypeFields() {
+        updateParticipantTypeFields();
       }
 
       // Initialize on page load
@@ -418,18 +429,19 @@
       // Fee structure based on the provided table
       const feeStructure = {
         student: {
-          hitam: { offline: 600, online: 500, poster: 500 },
-          academic: { offline: 800, online: 700, poster: 600 }
+          hitam: { offline: 600, online: 500, poster: 500, listener: 0 },
+          academic: { offline: 800, online: 700, poster: 600, listener: 300 }
         },
         faculty: {
-          hitam: { offline: 1000, online: 900, poster: 700 },
-          academic: { offline: 1400, online: 1100, poster: 1000 }
+          hitam: { offline: 1000, online: 900, poster: 700, listener: 0 },
+          academic: { offline: 1400, online: 1100, poster: 1000, listener: 300 }
         },
         professional: {
-          industry: { offline: 1700, online: 1400, poster: 1200 }
+          industry: { offline: 1700, online: 1400, poster: 1200, listener: 300 }
         },
         listener: {
-            any: { offline: 300, online: 250, poster: 250, listener: 300 }
+          hitam: { offline: 0, online: 0, poster: 0, listener: 0 },
+          any: { offline: 300, online: 250, poster: 250, listener: 300 }
         }
       };
 
@@ -461,7 +473,7 @@
         }
 
         // For non-listeners, check paper type
-        if (participantType !== 'listener') {
+        if (participantType !== 'listener' && submissionType !== 'listener') {
           const paperType = document.getElementById('paperType').value;
           if (!paperType || paperType === '') {
             alert('Please select Paper Type');
@@ -489,7 +501,8 @@
           } else if (participantType === 'professional') {
             baseFee = feeStructure.professional.industry[submissionType];
           } else if (participantType === 'listener') {
-            baseFee = feeStructure.listener.any[submissionType];
+            const org = organization === 'hitam' ? 'hitam' : 'any';
+            baseFee = feeStructure.listener[org][submissionType];
           }
         } catch (error) {
           console.error('Fee calculation error:', error);
