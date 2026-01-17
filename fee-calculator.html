@@ -198,11 +198,7 @@
     <div class="calculator-container">
       <h1 style="margin-top: 0; color: #2e7d32;">Registration Fee Calculator</h1>
       <p style="color: #55616a; margin-bottom: 24px;">Calculate your conference registration fee with applicable discounts</p>
-      <div class="note-box" style="background-color: #e8f5e9; border-left: 4px solid #2e7d32; padding: 12px; margin-bottom: 20px;">
-        <p style="margin: 0; color: #1b5e20; font-weight: 600;">
-          <strong>Free Entry for HITAM Students & Faculty:</strong> HITAM students and faculty who are only attending the conference (not presenting papers/posters) can attend for <strong>FREE (₹0)</strong>.
-        </p>
-      </div>
+      
 
       <form id="feeCalculator">
         <!-- Participant Type -->
@@ -236,7 +232,7 @@
             <option value="">-- Select Submission Type --</option>
             <option value="offline">Offline Paper</option>
             <option value="online" id="onlineOption">Online Paper</option>
-            <option value="poster">Poster</option>
+            <option value="poster">Offline Poster</option>
             <option value="listener">Listener / Attendee</option>
           </select>
         </div>
@@ -260,7 +256,6 @@
         <!-- Technical Chapter Membership -->
         <div class="form-group">
           <label>Do you have membership in any of these technical chapters? (Select only one) *</label>
-          <p style="margin: 8px 0 12px; color: #55616a; font-size: 14px;">Early Bird discount applies for payments made on or before 2026-01-17 (10%). Technical chapter members also get an additional 10% discount.</p>
           <div class="checkbox-group">
             <label>
               <input type="radio" name="membership" value="isampe" />
@@ -313,7 +308,7 @@
             <span id="baseFee">₹0</span>
           </div>
           <div class="fee-line" id="earlyBirdLine" style="display: none;">
-            <span class="discount-applied">Early Bird Discount (10%):</span>
+            <span class="discount-applied">Early Bird Discount:</span>
             <span id="earlyBirdDiscount" class="discount-applied">- ₹0</span>
           </div>
           <div class="fee-line" id="membershipLine" style="display: none;">
@@ -342,7 +337,7 @@
     </div>
 
     <script>
-      // Hide Paper Type section when Participant Type is Listener
+      // Hide Paper Type section when Participant Type is Listener or Submission Type is Offline Paper / Offline Poster / Listener
       function updateParticipantTypeFields() {
         const participantType = document.getElementById('participantType').value;
         const submissionType = document.getElementById('submissionType').value;
@@ -350,14 +345,14 @@
         const paperTypeGroup = paperTypeEl ? paperTypeEl.closest('.form-group') : null;
         if (!paperTypeGroup) return;
 
-        if (participantType === 'listener' || submissionType === 'listener') {
-          // Hide and disable Paper Type for listeners
+        if (participantType === 'listener' || submissionType === 'listener' || submissionType === 'offline' || submissionType === 'poster') {
+          // Hide and disable Paper Type for listeners, offline paper, offline poster, and attendees
           paperTypeGroup.style.display = 'none';
           paperTypeEl.value = 'na';
           paperTypeEl.disabled = true;
           paperTypeEl.removeAttribute('required');
         } else {
-          // Show and enable for other participant types
+          // Show and enable for other participant types (online paper only)
           paperTypeGroup.style.display = 'block';
           paperTypeEl.disabled = false;
           paperTypeEl.setAttribute('required', 'required');
@@ -472,8 +467,8 @@
           return;
         }
 
-        // For non-listeners, check paper type
-        if (participantType !== 'listener' && submissionType !== 'listener') {
+        // Only require Paper Type when Submission Type is Online Paper
+        if (submissionType === 'online') {
           const paperType = document.getElementById('paperType').value;
           if (!paperType || paperType === '') {
             alert('Please select Paper Type');
@@ -510,7 +505,8 @@
           return;
         }
 
-        if (!baseFee) {
+        // Validate base fee (allow 0 for HITAM listeners)
+        if (typeof baseFee !== 'number' || isNaN(baseFee)) {
           alert('Invalid fee configuration. Please check your selections.');
           return;
         }
@@ -518,6 +514,8 @@
         // Check early bird discount (on or before Jan 17, 2026)
         const earlyBirdDeadline = new Date('2026-01-17');
         const isEarlyBird = registrationDate <= earlyBirdDeadline;
+        // Early-bird rate: HITAM gets 30%, others get 10%
+        const earlyBirdRate = organization === 'hitam' ? 0.30 : 0.10;
 
         // Calculate discounts
         let discount = 0;
@@ -525,7 +523,7 @@
         let membershipAmount = 0;
 
         if (isEarlyBird) {
-          earlyBirdAmount = Math.round(baseFee * 0.10);
+          earlyBirdAmount = Math.round(baseFee * earlyBirdRate);
           discount += earlyBirdAmount;
         }
 
@@ -546,6 +544,11 @@
 
         if (isEarlyBird) {
           earlyBirdLine.style.display = 'flex';
+          // Update label to reflect the correct percentage
+          const earlyBirdLabel = earlyBirdLine.querySelector('.discount-applied');
+          if (earlyBirdLabel) {
+            earlyBirdLabel.textContent = 'Early Bird Discount (' + Math.round(earlyBirdRate * 100) + '%):';
+          }
           document.getElementById('earlyBirdDiscount').textContent = '- ₹' + earlyBirdAmount;
         } else {
           earlyBirdLine.style.display = 'none';
