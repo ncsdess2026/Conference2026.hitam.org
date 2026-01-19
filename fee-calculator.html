@@ -365,26 +365,33 @@
         updateParticipantTypeFields();
       }
 
+      function getLocalDateString(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
       // Initialize on page load
       document.addEventListener('DOMContentLoaded', () => {
         updateParticipantTypeFields();
         
-        // Set today's date as default and restrict to today only
+        // Set today's date as default and restrict to that single day (auto-updates daily, local timezone)
         const today = new Date();
-        const dateString = today.toISOString().split('T')[0];
-        document.getElementById('registrationDate').valueAsDate = new Date(dateString);
-        document.getElementById('registrationDate').max = dateString;
-        document.getElementById('registrationDate').min = dateString;
+        today.setHours(0, 0, 0, 0);
+        const dateString = getLocalDateString(today);
+
+        const regDateEl = document.getElementById('registrationDate');
+        regDateEl.value = dateString;
+        regDateEl.max = dateString;
+        regDateEl.min = dateString;
         
-        // Add real-time validation to enforce today's date only
-        document.getElementById('registrationDate').addEventListener('change', function() {
-          const selectedDate = new Date(this.value);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
+        // Add real-time validation to enforce today only (page refresh will roll this forward after midnight)
+        regDateEl.addEventListener('change', function() {
+          const selectedDate = new Date(this.value + 'T00:00:00');
           selectedDate.setHours(0, 0, 0, 0);
-          
           if (selectedDate.getTime() !== today.getTime()) {
-            alert('Registration date must be today\'s date only. Resetting to today.');
+            alert('Registration date must be set to today only. Resetting to the allowed date.');
             this.value = dateString;
           }
         });
@@ -485,14 +492,14 @@
           return;
         }
 
-        // Validate that registration date is exactly today (prevent past dates to avoid discount misuse)
+        // Validate that registration date is exactly today (auto-rolls each day on page load, local timezone)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+
         registrationDate.setHours(0, 0, 0, 0);
-        
         if (registrationDate.getTime() !== today.getTime()) {
-          alert('Registration date must be today\'s date. Please enter today\'s date only.');
-          document.getElementById('registrationDate').value = today.toISOString().split('T')[0];
+          alert('Registration date must be today. Please enter the allowed date only.');
+          document.getElementById('registrationDate').value = getLocalDateString(today);
           return;
         }
 
@@ -540,8 +547,14 @@
           return;
         }
 
-        // Check early bird discount (on or before Jan 19, 2026)
-        const earlyBirdDeadline = new Date('2026-01-19');
+        // Early bird: if today is on/before Jan 19, use Jan 19 cutoff; afterwards use Jan 21 cutoff
+        const legacyEarlyBird = new Date('2026-01-19');
+        legacyEarlyBird.setHours(0, 0, 0, 0);
+        const newEarlyBird = new Date('2026-01-21');
+        newEarlyBird.setHours(0, 0, 0, 0);
+        const todayForDeadline = new Date();
+        todayForDeadline.setHours(0, 0, 0, 0);
+        const earlyBirdDeadline = todayForDeadline <= legacyEarlyBird ? legacyEarlyBird : newEarlyBird;
         const isEarlyBird = registrationDate <= earlyBirdDeadline;
         // Early-bird rate: HITAM gets 30%, others get 10%
         const earlyBirdRate = organization === 'hitam' ? 0.30 : 0.10;
@@ -561,7 +574,7 @@
           discount += membershipAmount;
         }
 
-        const finalFee = baseFee - discount;
+        const finalFee = Math.max(baseFee - discount, 0); // Clamp to prevent negative values
 
         // Display results
         document.getElementById('baseFee').textContent = '₹' + baseFee;
