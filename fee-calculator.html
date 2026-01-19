@@ -368,9 +368,27 @@
       // Initialize on page load
       document.addEventListener('DOMContentLoaded', () => {
         updateParticipantTypeFields();
+        
+        // Set today's date as default and restrict to today only
+        const today = new Date();
+        const dateString = today.toISOString().split('T')[0];
+        document.getElementById('registrationDate').valueAsDate = new Date(dateString);
+        document.getElementById('registrationDate').max = dateString;
+        document.getElementById('registrationDate').min = dateString;
+        
+        // Add real-time validation to enforce today's date only
+        document.getElementById('registrationDate').addEventListener('change', function() {
+          const selectedDate = new Date(this.value);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          selectedDate.setHours(0, 0, 0, 0);
+          
+          if (selectedDate.getTime() !== today.getTime()) {
+            alert('Registration date must be today\'s date only. Resetting to today.');
+            this.value = dateString;
+          }
+        });
       });
-      // Set today's date as default
-      document.getElementById('registrationDate').valueAsDate = new Date();
 
       // Function to disable/enable online option based on organization
       function updateSubmissionTypeOptions() {
@@ -464,6 +482,17 @@
         const registrationDate = new Date(registrationDateInput);
         if (isNaN(registrationDate.getTime())) {
           alert('Invalid registration date');
+          return;
+        }
+
+        // Validate that registration date is exactly today (prevent past dates to avoid discount misuse)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        registrationDate.setHours(0, 0, 0, 0);
+        
+        if (registrationDate.getTime() !== today.getTime()) {
+          alert('Registration date must be today\'s date. Please enter today\'s date only.');
+          document.getElementById('registrationDate').value = today.toISOString().split('T')[0];
           return;
         }
 
