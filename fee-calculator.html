@@ -554,15 +554,16 @@
           return;
         }
 
-        // Early bird: if today is on/before Jan 19, use Jan 19 cutoff; afterwards use Jan 24 cutoff
-        const legacyEarlyBird = new Date('2026-01-19');
-        legacyEarlyBird.setHours(0, 0, 0, 0);
-        const newEarlyBird = new Date('2026-01-24');
-        newEarlyBird.setHours(0, 0, 0, 0);
-        const todayForDeadline = new Date();
-        todayForDeadline.setHours(0, 0, 0, 0);
-        const earlyBirdDeadline = todayForDeadline <= legacyEarlyBird ? legacyEarlyBird : newEarlyBird;
+        // Early bird deadline: 24-01-2026
+        // Participants registering on or before 24-01-2026 get early bird discount
+        const earlyBirdDeadline = new Date('2026-01-24');
+        earlyBirdDeadline.setHours(23, 59, 59, 999); // End of 24-01-2026
         const isEarlyBird = registrationDate <= earlyBirdDeadline;
+        
+        // Debug: Log early bird status
+        console.log('Registration Date:', registrationDate);
+        console.log('Early Bird Deadline:', earlyBirdDeadline);
+        console.log('Is Early Bird:', isEarlyBird);
         // Early-bird rate: HITAM gets 30%, others get 10%
         const earlyBirdRate = organization === 'hitam' ? 0.30 : 0.10;
 
