@@ -380,18 +380,23 @@
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const dateString = getLocalDateString(today);
+        
+        // Registration deadline is 27-01-2026
+        const regDeadline = new Date('2026-01-27');
+        regDeadline.setHours(0, 0, 0, 0);
+        const deadlineString = getLocalDateString(regDeadline);
 
         const regDateEl = document.getElementById('registrationDate');
         regDateEl.value = dateString;
-        regDateEl.max = dateString;
+        regDateEl.max = deadlineString;
         regDateEl.min = dateString;
         
-        // Add real-time validation to enforce today only (page refresh will roll this forward after midnight)
+        // Add real-time validation to enforce registration deadline
         regDateEl.addEventListener('change', function() {
           const selectedDate = new Date(this.value + 'T00:00:00');
           selectedDate.setHours(0, 0, 0, 0);
-          if (selectedDate.getTime() !== today.getTime()) {
-            alert('Registration date must be set to today only. Resetting to the allowed date.');
+          if (selectedDate < today || selectedDate > regDeadline) {
+            alert('Registration date must be between today and 27-01-2026.');
             this.value = dateString;
           }
         });
@@ -492,13 +497,15 @@
           return;
         }
 
-        // Validate that registration date is exactly today (auto-rolls each day on page load, local timezone)
+        // Validate that registration date is within the registration window (today through 27-01-2026)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        const regDeadline = new Date('2026-01-27');
+        regDeadline.setHours(0, 0, 0, 0);
 
         registrationDate.setHours(0, 0, 0, 0);
-        if (registrationDate.getTime() !== today.getTime()) {
-          alert('Registration date must be today. Please enter the allowed date only.');
+        if (registrationDate < today || registrationDate > regDeadline) {
+          alert('Registration date must be between today and 27-01-2026.');
           document.getElementById('registrationDate').value = getLocalDateString(today);
           return;
         }
