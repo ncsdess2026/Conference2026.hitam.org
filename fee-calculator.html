@@ -547,10 +547,10 @@
           return;
         }
 
-        // Early bird: if today is on/before Jan 19, use Jan 19 cutoff; afterwards use Jan 21 cutoff
+        // Early bird: if today is on/before Jan 19, use Jan 19 cutoff; afterwards use Jan 24 cutoff
         const legacyEarlyBird = new Date('2026-01-19');
         legacyEarlyBird.setHours(0, 0, 0, 0);
-        const newEarlyBird = new Date('2026-01-21');
+        const newEarlyBird = new Date('2026-01-24');
         newEarlyBird.setHours(0, 0, 0, 0);
         const todayForDeadline = new Date();
         todayForDeadline.setHours(0, 0, 0, 0);
