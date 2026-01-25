@@ -307,12 +307,12 @@
             <span>Base Fee:</span>
             <span id="baseFee">₹0</span>
           </div>
-          <div class="fee-line" id="earlyBirdLine" style="display: none;">
-            <span class="discount-applied">Early Bird Discount:</span>
-            <span id="earlyBirdDiscount" class="discount-applied">- ₹0</span>
+          <div class="fee-line" id="sankrantiLine" style="display: none;">
+            <span class="discount-applied">Sankranti Offer (20% for HITAM, till 25/01/2025 11:59PM):</span>
+            <span id="sankrantiDiscount" class="discount-applied">- ₹0</span>
           </div>
           <div class="fee-line" id="membershipLine" style="display: none;">
-            <span class="discount-applied">Membership Discount (10%):</span>
+            <span class="discount-applied" id="membershipLabel">Membership Discount:</span>
             <span id="membershipDiscount" class="discount-applied">- ₹0</span>
           </div>
           <div class="fee-line total">
@@ -554,30 +554,33 @@
           return;
         }
 
-        // Early bird deadline: 24-01-2026
-        // Participants registering on or before 24-01-2026 get early bird discount
-        const earlyBirdDeadline = new Date('2026-01-24');
-        earlyBirdDeadline.setHours(23, 59, 59, 999); // End of 24-01-2026
-        const isEarlyBird = registrationDate <= earlyBirdDeadline;
-        
-        // Debug: Log early bird status
-        console.log('Registration Date:', registrationDate);
-        console.log('Early Bird Deadline:', earlyBirdDeadline);
-        console.log('Is Early Bird:', isEarlyBird);
-        // Early-bird rate: HITAM gets 30%, others get 10%
-        const earlyBirdRate = organization === 'hitam' ? 0.30 : 0.10;
+        // Sankranti offer deadline: 25-01-2025 11:59PM
+        const sankrantiDeadline = new Date('2025-01-25T23:59:59');
+        const isSankranti = registrationDate <= sankrantiDeadline;
 
         // Calculate discounts
         let discount = 0;
-        let earlyBirdAmount = 0;
+        let sankrantiAmount = 0;
         let membershipAmount = 0;
 
-        if (isEarlyBird) {
-          earlyBirdAmount = Math.round(baseFee * earlyBirdRate);
-          discount += earlyBirdAmount;
+        // Sankranti offer: 20% for HITAM students/faculty till 25/01/2025 11:59PM
+        if ((participantType === 'student' || participantType === 'faculty') && organization === 'hitam' && isSankranti) {
+          sankrantiAmount = Math.round(baseFee * 0.20);
+          discount += sankrantiAmount;
         }
 
-        if (hasMembership) {
+        // Membership discount: 10% for HITAM students/faculty with membership, always available
+        if ((participantType === 'student' || participantType === 'faculty') && organization === 'hitam' && hasMembership) {
+          membershipAmount = Math.round(baseFee * 0.10);
+          discount += membershipAmount;
+        }
+
+        // For HITAM students/faculty: if both Sankranti and membership, total 30% (20%+10%)
+        // For HITAM students/faculty: if only Sankranti, 20%; if only membership, 10%
+        // For HITAM students/faculty: if neither, no discount
+
+        // For others, only membership discount applies if selected
+        if (!(organization === 'hitam' && (participantType === 'student' || participantType === 'faculty')) && hasMembership) {
           membershipAmount = Math.round(baseFee * 0.10);
           discount += membershipAmount;
         }
@@ -589,23 +592,27 @@
         document.getElementById('finalFee').textContent = '₹' + finalFee;
 
         // Show/hide discount lines
-        const earlyBirdLine = document.getElementById('earlyBirdLine');
+        const sankrantiLine = document.getElementById('sankrantiLine');
         const membershipLine = document.getElementById('membershipLine');
+        const membershipLabel = document.getElementById('membershipLabel');
 
-        if (isEarlyBird) {
-          earlyBirdLine.style.display = 'flex';
-          // Update label to reflect the correct percentage
-          const earlyBirdLabel = earlyBirdLine.querySelector('.discount-applied');
-          if (earlyBirdLabel) {
-            earlyBirdLabel.textContent = 'Early Bird Discount (' + Math.round(earlyBirdRate * 100) + '%):';
-          }
-          document.getElementById('earlyBirdDiscount').textContent = '- ₹' + earlyBirdAmount;
+        // Sankranti offer line
+        if (sankrantiAmount > 0) {
+          sankrantiLine.style.display = 'flex';
+          document.getElementById('sankrantiDiscount').textContent = '- ₹' + sankrantiAmount;
         } else {
-          earlyBirdLine.style.display = 'none';
+          sankrantiLine.style.display = 'none';
         }
 
-        if (hasMembership) {
+        // Membership discount line
+        if (membershipAmount > 0) {
           membershipLine.style.display = 'flex';
+          // Show correct label for HITAM
+          if ((participantType === 'student' || participantType === 'faculty') && organization === 'hitam') {
+            membershipLabel.textContent = 'Membership Discount (10% for HITAM, continues till 29-01-2026):';
+          } else {
+            membershipLabel.textContent = 'Membership Discount (10%):';
+          }
           document.getElementById('membershipDiscount').textContent = '- ₹' + membershipAmount;
         } else {
           membershipLine.style.display = 'none';
