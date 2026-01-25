@@ -564,6 +564,7 @@
         let membershipAmount = 0;
 
         // Sankranti offer: 20% for HITAM students/faculty till 25/01/2025 11:59PM
+        // Always apply 20% discount for HITAM students/faculty before deadline, regardless of membership
         if ((participantType === 'student' || participantType === 'faculty') && organization === 'hitam' && isSankranti) {
           sankrantiAmount = Math.round(baseFee * 0.20);
           discount += sankrantiAmount;
@@ -599,6 +600,8 @@
         // Sankranti offer line
         if (sankrantiAmount > 0) {
           sankrantiLine.style.display = 'flex';
+          // Update label to clarify discount applies with or without membership
+          document.querySelector('#sankrantiLine .discount-applied').textContent = 'Sankranti Offer (20% for HITAM students/faculty, with or without membership, till 25/01/2025 11:59PM):';
           document.getElementById('sankrantiDiscount').textContent = '- ₹' + sankrantiAmount;
         } else {
           sankrantiLine.style.display = 'none';
