@@ -529,20 +529,14 @@ body {
 .person-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .person-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 2px 8px rgba(20, 60, 20, 0.06); }
 .person-card .avatar {
+  border-radius: 50%;
+  margin-bottom: 12px;
   width: 120px;
   height: 120px;
-  border-radius: 50%;
   object-fit: cover;
-  object-position: center;
-  border: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 3px var(--border);
-  background: #ffffff;
-  margin: 0 auto 12px;
   display: block;
-  transform: scale(1.12); /* stronger crop to remove dark edges */
-  clip-path: circle(50% at 50% 50%);
-  -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 68%, rgba(0,0,0,0) 100%);
-  mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 68%, rgba(0,0,0,0) 100%);
+  margin-left: auto;
+  margin-right: auto;
 }
 .person-card .name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
 .person-card .role { color: var(--primary); font-size: 13px; font-weight: 600; margin-bottom: 2px; }
